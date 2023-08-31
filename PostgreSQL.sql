@@ -180,3 +180,250 @@ SELECT *
     FROM aluno 
     WHERE nome LIKE 'Thiago'
         OR nome LIKE 'Miguel';
+------------------------------------------------------------------------------------
+CREATE TABLE aluno (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL
+
+);
+
+INSERIR DADOS
+INSERT INTO aluno (nome) VALUES ('Diogo');
+INSERT INTO aluno (nome) VALUES ('Vinícius');
+------------------------------------------------------------------------------------
+PRIMARY KEY
+CREATE TABLE aluno_curso (
+    aluno_id  INTEGER,
+    curso_id INTEGER
+    nome VARCHAR(255) NOT NULL
+    PRIMARY KEY(aluno_id, curso_id)
+
+    FOREING KEY (aluno_id)
+        REFERENCES aluno(id)
+
+        FOREIGN KEY (curso_id)
+         REFERENCES curso (id)
+);
+
+INSERT INTO aluno_curso (aluno_id, curso_id) VALUES(1,1);
+INSERT INTO aluno_curso (aluno_id, curso_id) VALUES(2,1);
+INSERT INTO aluno_curso (aluno_id, curso_id) VALUES(3,1);
+
+------------------------------------------------------------------------------------
+ --cadastro de funcionários e seus departamentos. Antes, a pessoa que incluía os funcionários no sistema podia digitar qualquer nome de departamento, então você resolve 
+ --criar um cadastro de departamentos e vincular o cadastro do funcionário aos departamentos previamente cadastrados no sistema.
+
+CREATE TABLE departamentos(
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR (255) NOT NULL
+);
+
+CREATE TABLE funcionarios (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    departamento_id INTEGER,
+   
+    FOREIGN KEY (departamento_id) REFERENCES departamentos (id)
+);
+
+SELECT *
+    FROM aluno
+    JOIN aluno_curso ON aluno_curso.aluno_id = aluno.id
+
+SELECT aluno.nome as aluno,
+        curso.nome as curso
+
+    FROM aluno
+    JOIN aluno_curso ON aluno_curso.aluno_id = aluno.id
+    JOIN curso ON curso.id = aluno_curso.curso_id
+------------------------------------------------------------------------------------
+--LEFT JOIN , que significa que existe um dado na tabela da esquerda, mas não existe na tabela da direita.
+
+SELECT aluno.nome as "Nome do Aluno",
+        curso.nome as "Nome do Curso"
+
+        FROM aluno
+LEFT JOIN aluno_curso ON aluno_curso.aluno_id = aluno.id
+LEFT JOIN curso ON curso.id = aluno_curso.curso_id
+------------------------------------------------------------------------------------
+--os o código FULL JOIN , que irá considerar todos os dados, mesmo que o campo da direita ou o campo da esquerda esteja nulo.
+
+SELECT aluno.nome as "Nome do Aluno",
+        curso.nome as "Nome do Curso"
+
+        FROM aluno
+FULL JOIN aluno_curso ON aluno_curso.aluno_id = aluno.id
+FULL JOIN aluno_curso ON aluno_curso.aluno_id = aluno.id
+------------------------------------------------------------------------------------
+CREATE TABLE aluno_curso(
+    aluno_id INTEGER,
+        curso_id INTEGER
+        PRIMARY KEY(aluno_id, curso_id),
+
+        FOREIGN KEY (aluno_id)
+            REFERENCES aluno (id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+
+            FOREIGN KEY(curso_id) 
+            REFERENCES curso (id)
+);
+
+------------------------------------------------------------------------------------
+ -- projeto de agenda telefônica, que existe com a estrutura abaixo:
+ --Ao executar os comandos abaixo:
+
+UPDATE pessoas SET id = 2 WHERE nome = 'Diogo';
+DELETE FROM pessoas WHERE nome = 'Diogo';
+
+CREATE TABLE pessoas (
+    id INTEGER PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE telefones (
+    id INTEGER PRIMARY KEY,
+    pessoa_id INTEGER,
+    numero VARCHAR(15) NOT NULL,
+    FOREIGN KEY(pessoa_id) REFERENCES pessoas (id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+);
+
+INSERT INTO pessoas (id, nome) VALUES (1, 'Diogo');
+INSERT INTO telefones(id, pessoa_id, numero) VALUES(1,1 '(21) 98765-4321');
+
+------------------------------------------------------------------------------------
+
+SELECT * 
+    FROM funcionarios
+    ORDER BY nome;
+------------------------------------------------------------------------------------
+
+SELECT * 
+    FROM funcionarios
+    ORDER BY 3, 4, 2
+------------------------------------------------------------------------------------
+SELECT *  FROM funcionarios
+        ORDER BY 4 DESC, nome DESC, 2
+------------------------------------------------------------------------------------
+
+SELECT 
+    aluno.id as aluno_id,
+    aluno.ome as "Nome do Aluno",
+    curso.id as "curso_id",
+    curso.nome as "Nome do Curso"
+FROM aluno
+JOIN aluno_curso ON aluno_curso.aluno_id = aluno.id
+JORIN curso ON curso.id = aluno_curso.curso_id
+ORDER BY nome
+
+------------------------------------------------------------------------------------
+
+SELECT  * 
+    FROM funcionarios
+    ORDER BY nome
+    LIMIT 5;
+------------------------------------------------------------------------------------
+SELECT  * 
+    FROM funcionarios
+    ORDER BY nome
+    LIMIT 5;
+    OFFSET 1;
+
+    SELECT nome, nota
+FROM notas
+ORDER BY nota, nome LIMIT 100
+
+-- COUNT - Retorna a quantidade de registros
+-- SUM -   Retorna a soma dos registros
+-- MAX -   Retorna o maior valor dos registros
+-- MIN -   Retorna o menor valor dos registros
+-- AVG -   Retorna a média dos registros
+
+SELECT COUNT (id)
+    FROM funcionarios;
+
+SELECT COUNT (id),
+       SUM(id),
+       MAX(id),
+       MIN(id),
+       ROUND(AVG(id),0)
+  FROM funcionarios;
+-------------------------------------------------------------
+
+SELECT DISTINCT 
+    nome,
+    sobrenome
+FROM funcionarios
+ORDER BY nome;
+----------------------------------------------------------------
+
+SELECT DISTINCT
+    nome,
+    sobrenome,
+    COUNT(*)
+FROM funcionarios
+ORDER BY nome;
+
+-----------------------------------------------------------------
+
+SELECT * 
+    FROM aluno
+    JOIN aluno_curso ON aluno.id = aluno_curso.aluno_id
+    JOIN curso ON curso.id = aluno_curso.curso_id
+-----------------------------------------------------------------
+SELECT curso.nome
+        COUNT(aluno.id)
+    FROM aluno
+    JOIN aluno_curso ON aluno.id = aluno_curso.aluno_id
+    JOIN curso ON curso.id = aluno_curso.curso_id
+    GROUP BY 1
+    ORDER BY 1
+
+-----------------------------------------------------------------
+
+SELECT  * 
+    FROM curso
+    LEFT JOIN aluno_curso ON aluno.curso_id = curso.id
+    LEFT JOIN aluno_curso ON aluno.curso_id = curso.id
+    WHERE COUNT(aluno.id) = 0
+    GROUP BY 1
+    
+-----------------------------------------------------------------
+SELECT curso.nome,
+       COUNT(aluno.id)    
+  FROM curso
+  LEFT JOIN aluno_curso ON aluno_curso.curso_id = curso.id
+  LEFT JOIN aluno ON aluno.id = aluno_curso.aluno_id
+  WHERE curso.nome = 'Javascritp'
+GROUP BY 1
+
+---------------------------------------------------------------
+SELECT *
+    FROM curso
+    LEFT JOIN aluno_curso ON aluno.curso_id = curso.id
+    LEFT JOIN aluno ON aluno.id = aluno_curso.aluno_id
+    --WHERE curso.nome = 'Javascritp'
+GROUP BY 1
+    HAVING COUNT (aluno.id) = 0
+------------------------------------------------------------
+SELECT nome 
+    FROM funcionarios
+    GROUP BY nome
+    HAVING COUT (id) > 1;
+    ------------------------------------------------------
+
+SELECT nome,
+       COUNT(id)
+    FROM funcionarios
+    GROUP BY nome
+    HAVING COUNT(id) > 1;
+
+-------------------------------------------------------------
+SELECT palestras.nome AS "Nome da Palestra",
+    COUNT(inscricoes.id) AS "Quantidade de Inscritos"
+FROM inscricoes
+    JOIN palestras ON palestras.id = inscricoes.palestras
+
+    GROUP BY 1 HAVING count(inscricoes.id) < 10 ORDER BY 1
